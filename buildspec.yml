@@ -1,0 +1,43 @@
+# READ : https://docs.aws.amazon.com/ko_kr/codebuild/latest/userguide/getting-started-create-build-spec-console.html
+# SYNTAX : https://docs.aws.amazon.com/ko_kr/codebuild/latest/userguide/build-spec-ref.html#build-spec-ref-syntax
+# ENV_VARIANLE : https://docs.aws.amazon.com/ko_kr/codebuild/latest/userguide/build-env-ref-env-vars.html
+
+version : 0.0.1
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.7
+
+  pre_build:
+    on-failure: ABORT
+    commands:
+      - echo Nothing to do in pre-build!
+      - echo You could test your could in this moment
+      - echo You could ABORT or CONTINUE depending on 'on-failure' variable
+    finally:
+      - echo This always runs even if the update or install command fails 
+
+  build:
+    commands:
+      - echo Build started on `date`
+      - pip install wheel
+      - python setup.py sdist bdist_wheel
+
+  post-build:
+    commands:
+      - echo something to do in post-build
+
+artifacts:
+# AWS CodeBuild가 빌드 결과물을 확인할 수 있는지 정보를 적는 곳
+# 그리고 AWS CodeBuild가 빌드 결과물을 AWS S3에 어떻게 업로드할 지 적는 곳 
+  files:
+    # 빌드 출력 결과물을 적는 곳 
+    # - file.py               : 단일 파일
+    # - **/*.py               : base-directory 하위에 있는 모든 파일(확장자 .py)
+    # - dir1/*                : dir1 디렉토리에 있는 모든 파일
+    # - dir1/**/*             : dir1 디렉토리 하위 디렉토리 모든 파일 (재귀적)
+  name:
+    myname-$(date +%Y-%m-%d)-$AWS_REGION
+  base-directory: 'src'
+    
